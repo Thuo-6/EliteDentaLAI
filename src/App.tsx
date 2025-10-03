@@ -166,6 +166,141 @@ function App() {
             <span className="text-lg font-medium text-white">🦷 Elite Dental AI Ready - HIPAA Compliant</span>
           </div>
           
+          {/* Donation Section */}
+          <div className="mb-8 p-6 bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-md rounded-3xl border border-[#89CFF0]/20 max-w-2xl mx-auto">
+            <div className="text-center">
+              <div className="flex items-center justify-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-orange-400 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  </svg>
+                </div>
+                <h3 className="text-2xl font-bold text-white">Support Continued Development ☕</h3>
+              </div>
+              
+              <p className="text-gray-300 mb-6 leading-relaxed">
+                If this widget helps your business, consider buying me a coffee to support ongoing improvements.
+              </p>
+              
+              <div className="grid gap-4 text-left">
+                <h4 className="text-lg font-semibold text-[#89CFF0] text-center mb-4">Payment Options:</h4>
+                
+                {/* Binance */}
+                <div className="flex items-center justify-between p-4 bg-black/20 rounded-xl border border-[#89CFF0]/20 hover:border-[#89CFF0]/40 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">🟡</span>
+                    <div>
+                      <div className="text-white font-medium">Binance Users</div>
+                      <div className="text-gray-400 text-sm">Pay via Binance ID</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <code className="text-[#89CFF0] font-mono text-sm bg-black/30 px-3 py-1 rounded">86664780</code>
+                    <button 
+                      onClick={() => navigator.clipboard.writeText('86664780')}
+                      className="px-3 py-1 bg-[#89CFF0] text-white rounded-lg hover:bg-[#89CFF0]/90 transition-colors text-sm"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+                
+                {/* USDT */}
+                <div className="flex items-center justify-between p-4 bg-black/20 rounded-xl border border-[#89CFF0]/20 hover:border-[#89CFF0]/40 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">💚</span>
+                    <div>
+                      <div className="text-white font-medium">USDT</div>
+                      <div className="text-gray-400 text-sm">Tron (TRC20)</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <code className="text-[#89CFF0] font-mono text-xs bg-black/30 px-2 py-1 rounded max-w-[200px] truncate">TVi5L1eoLywjEqMYhw21nGAmREY8Cac9qJ</code>
+                    <button 
+                      onClick={() => navigator.clipboard.writeText('TVi5L1eoLywjEqMYhw21nGAmREY8Cac9qJ')}
+                      className="px-3 py-1 bg-[#89CFF0] text-white rounded-lg hover:bg-[#89CFF0]/90 transition-colors text-sm"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+                
+                {/* Ethereum */}
+                <div className="flex items-center justify-between p-4 bg-black/20 rounded-xl border border-[#89CFF0]/20 hover:border-[#89CFF0]/40 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">🔷</span>
+                    <div>
+                      <div className="text-white font-medium">Ethereum</div>
+                      <div className="text-gray-400 text-sm">ERC20</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <code className="text-[#89CFF0] font-mono text-xs bg-black/30 px-2 py-1 rounded max-w-[200px] truncate">0xcffeefd6fa4e67f96a390498e59913ab0edb51df</code>
+                    <button 
+                      onClick={() => navigator.clipboard.writeText('0xcffeefd6fa4e67f96a390498e59913ab0edb51df')}
+                      className="px-3 py-1 bg-[#89CFF0] text-white rounded-lg hover:bg-[#89CFF0]/90 transition-colors text-sm"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+                
+                {/* Bitcoin/BNB */}
+                <div className="flex items-center justify-between p-4 bg-black/20 rounded-xl border border-[#89CFF0]/20 hover:border-[#89CFF0]/40 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">🟠</span>
+                    <div>
+                      <div className="text-white font-medium">Bitcoin/BNB</div>
+                      <div className="text-gray-400 text-sm">BNB Smartchain (BEP20)</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <code className="text-[#89CFF0] font-mono text-xs bg-black/30 px-2 py-1 rounded max-w-[200px] truncate">0xcffeefd6fa4e67f96a390498e59913ab0edb51df</code>
+                    <button 
+                      onClick={() => navigator.clipboard.writeText('0xcffeefd6fa4e67f96a390498e59913ab0edb51df')}
+                      className="px-3 py-1 bg-[#89CFF0] text-white rounded-lg hover:bg-[#89CFF0]/90 transition-colors text-sm"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+                
+                {/* Solana */}
+                <div className="flex items-center justify-between p-4 bg-black/20 rounded-xl border border-[#89CFF0]/20 hover:border-[#89CFF0]/40 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">🟣</span>
+                    <div>
+                      <div className="text-white font-medium">Solana</div>
+                      <div className="text-gray-400 text-sm">Case-sensitive</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <code className="text-[#89CFF0] font-mono text-xs bg-black/30 px-2 py-1 rounded max-w-[200px] truncate">9pGwHNjck5GamJ4H5LfZAesLGRUCfnZF1crUbipHuG4i</code>
+                    <button 
+                      onClick={() => navigator.clipboard.writeText('9pGwHNjck5GamJ4H5LfZAesLGRUCfnZF1crUbipHuG4i')}
+                      className="px-3 py-1 bg-[#89CFF0] text-white rounded-lg hover:bg-[#89CFF0]/90 transition-colors text-sm"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+                
+                <div className="mt-4 p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl">
+                  <p className="text-amber-200 text-sm flex items-center gap-2">
+                    <span>⚠️</span>
+                    <span><strong>Note:</strong> Solana address is case-sensitive. Copy and paste exactly as shown.</span>
+                  </p>
+                </div>
+              </div>
+              
+              <div className="mt-6 text-center">
+                <p className="text-gray-400 text-sm">
+                  Your support helps maintain and improve this free tool for dental practices worldwide.
+                </p>
+              </div>
+            </div>
+          </div>
+          
           {/* Enhanced CTA Button with 3D Effects */}
           <div className="relative inline-block">
             <button
