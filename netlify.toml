@@ -1,0 +1,21 @@
+[build]
+  command = "npm run build && npm run optimize"
+  publish = "dist"
+
+[build.environment]
+  VITE_VAPI_PUBLIC_KEY = "3c016063-003f-482f-9ea3-40b50c02d546"
+  VITE_VAPI_ASSISTANT_ID = "1d07df21-4bef-48e8-a092-6ff324eb8b52"
+  DENTAL_MODE = "production"
+  PUBLIC_URL = "https://zesty-clafoutis-856bae.netlify.app"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Methods = "GET, POST, OPTIONS"
+    Access-Control-Allow-Headers = "Content-Type, Authorization"
