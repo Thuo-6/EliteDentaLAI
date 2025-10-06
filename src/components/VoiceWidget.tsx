@@ -120,13 +120,6 @@ export const VoiceWidget = () => {
       description: 'Binance ID'
     },
     {
-      name: 'M-Pesa Mobile Money',
-      id: '0727990477',
-      type: 'mpesa',
-      icon: '📱',
-      description: 'Kenya Mobile Payment'
-    },
-    {
       name: 'USDT (Tron)',
       address: 'TVi5L1eoLywjEqMYhw21nGAmREY8Cac9qJ',
       type: 'usdt',
