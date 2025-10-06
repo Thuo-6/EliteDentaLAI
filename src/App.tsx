@@ -205,6 +205,26 @@ function App() {
                   </div>
                 </div>
                 
+                {/* M-Pesa */}
+                <div className="flex items-center justify-between p-4 bg-black/20 rounded-xl border border-[#89CFF0]/20 hover:border-[#89CFF0]/40 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">📱</span>
+                    <div>
+                      <div className="text-white font-medium">M-Pesa Mobile Money</div>
+                      <div className="text-gray-400 text-sm">Kenya Mobile Payment</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <code className="text-[#89CFF0] font-mono text-sm bg-black/30 px-3 py-1 rounded">0727990477</code>
+                    <button 
+                      onClick={() => navigator.clipboard.writeText('0727990477')}
+                      className="px-3 py-1 bg-[#89CFF0] text-white rounded-lg hover:bg-[#89CFF0]/90 transition-colors text-sm"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+                
                 {/* USDT */}
                 <div className="flex items-center justify-between p-4 bg-black/20 rounded-xl border border-[#89CFF0]/20 hover:border-[#89CFF0]/40 transition-colors">
                   <div className="flex items-center gap-3">
