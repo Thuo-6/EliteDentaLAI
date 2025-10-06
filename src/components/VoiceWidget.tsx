@@ -16,12 +16,6 @@ import {
   X,
   Copy,
   Check
-  Coffee,
-  Heart,
-  Sparkles,
-  X,
-  Copy,
-  Check
 } from 'lucide-react';
 import { useVapi } from '../hooks/useVapi';
 import { AnimatedDentalIcon } from './AnimatedDentalIcon';
@@ -49,8 +43,6 @@ export const VoiceWidget = () => {
   const [lastInteraction, setLastInteraction] = useState(Date.now());
   const [showTextInput, setShowTextInput] = useState(false);
   const [textMessage, setTextMessage] = useState('');
-  const [showDonation, setShowDonation] = useState(false);
-  const [copiedAddress, setCopiedAddress] = useState('');
   const [showDonation, setShowDonation] = useState(false);
   const [copiedAddress, setCopiedAddress] = useState('');
   const widgetRef = useRef<HTMLDivElement>(null);
@@ -117,16 +109,6 @@ export const VoiceWidget = () => {
     }
   };
 
-  const copyToClipboard = async (text: string, type: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopiedAddress(type);
-      setTimeout(() => setCopiedAddress(''), 2000);
-    } catch (err) {
-      console.error('Failed to copy:', err);
-    }
-  };
-
   const hasError = error || connectionHealth === 'failed';
 
   const donationOptions = [
@@ -138,42 +120,11 @@ export const VoiceWidget = () => {
       description: 'Binance ID'
     },
     {
-      name: 'USDT (Tron)',
-      address: 'TVi5L1eoLywjEqMYhw21nGAmREY8Cac9qJ',
-      type: 'usdt',
-      icon: '💚',
-      description: 'TRC20 Network'
-    },
-    {
-      name: 'Ethereum',
-      address: '0xcffeefd6fa4e67f96a390498e59913ab0edb51df',
-      type: 'eth',
-      icon: '🔷',
-      description: 'ERC20 Network'
-    },
-    {
-      name: 'Bitcoin/BNB',
-      address: '0xcffeefd6fa4e67f96a390498e59913ab0edb51df',
-      type: 'bnb',
-      icon: '🟠',
-      description: 'BEP20 SmartChain'
-    },
-    {
-      name: 'Solana',
-      address: '9pGwHNjck5GamJ4H5LfZAesLGRUCfnZF1crUbipHuG4i',
-      type: 'sol',
-      icon: '🟣',
-      description: 'Case-sensitive'
-    }
-  ];
-
-  const donationOptions = [
-    {
-      name: 'Binance Pay',
-      id: '86664780',
-      type: 'binance',
-      icon: '🟡',
-      description: 'Binance ID'
+      name: 'M-Pesa Mobile Money',
+      id: '0727990477',
+      type: 'mpesa',
+      icon: '📱',
+      description: 'Kenya Mobile Payment'
     },
     {
       name: 'USDT (Tron)',
@@ -218,89 +169,6 @@ export const VoiceWidget = () => {
                 </div>
                 <div>
                   <h3 className="text-xl font-bold text-gray-800">Support Continued Development</h3>
-                  <p className="text-sm text-gray-600">Buy me a coffee ☕</p>
-                </div>
-              </div>
-              <button
-                onClick={() => setShowDonation(false)}
-                className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
-              >
-                <X className="w-4 h-4 text-gray-500" />
-              </button>
-            </div>
-
-            <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border border-blue-100">
-              <div className="flex items-center gap-2 mb-2">
-                <Heart className="w-4 h-4 text-red-500" />
-                <span className="text-sm font-medium text-gray-700">Thank you for your support!</span>
-              </div>
-              <p className="text-xs text-gray-600">
-                If this Elite Dental AI Widget helps your business, consider supporting continued development and improvements.
-              </p>
-            </div>
-
-            <div className="space-y-3">
-              {donationOptions.map((option) => (
-                <div key={option.type} className="p-4 bg-gray-50 rounded-xl border border-gray-100 hover:border-[#89CFF0]/30 transition-colors">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-3">
-                      <span className="text-lg">{option.icon}</span>
-                      <div>
-                        <h4 className="font-semibold text-gray-800 text-sm">{option.name}</h4>
-                        <p className="text-xs text-gray-500">{option.description}</p>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => copyToClipboard(option.address || option.id || '', option.type)}
-                      className="flex items-center gap-1 px-3 py-1 bg-[#89CFF0] text-white rounded-lg hover:bg-[#89CFF0]/90 transition-colors text-xs"
-                    >
-                      {copiedAddress === option.type ? (
-                        <>
-                          <Check className="w-3 h-3" />
-                          Copied!
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-3 h-3" />
-                          Copy
-                        </>
-                      )}
-                    </button>
-                  </div>
-                  <div className="bg-white rounded-lg p-2 border border-gray-200">
-                    <code className="text-xs text-gray-700 break-all font-mono">
-                      {option.address || option.id}
-                    </code>
-                  </div>
-                  {option.type === 'sol' && (
-                    <p className="text-xs text-amber-600 mt-1 flex items-center gap-1">
-                      ⚠️ Case-sensitive - copy exactly as shown
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-6 text-center">
-              <p className="text-xs text-gray-500">
-                Your support helps maintain and improve this free tool for dental practices worldwide.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Donation Modal */}
-      {showDonation && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[60] p-4">
-          <div className="bg-white rounded-3xl shadow-2xl border border-[#89CFF0]/20 p-8 max-w-md w-full max-h-[80vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-gradient-to-br from-orange-400 to-pink-500 rounded-xl flex items-center justify-center">
-                  <Coffee className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-gray-800">Support Development</h3>
                   <p className="text-sm text-gray-600">Buy me a coffee ☕</p>
                 </div>
               </div>
@@ -443,13 +311,6 @@ export const VoiceWidget = () => {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <button
-                onClick={() => setShowDonation(true)}
-                className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-pink-500 hover:from-orange-500 hover:to-pink-600 flex items-center justify-center transition-all duration-300 transform hover:scale-110 shadow-lg"
-                title="Support Development"
-              >
-                <Coffee className="w-4 h-4 text-white" />
-              </button>
               <button
                 onClick={() => setShowDonation(true)}
                 className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-pink-500 hover:from-orange-500 hover:to-pink-600 flex items-center justify-center transition-all duration-300 transform hover:scale-110 shadow-lg"
