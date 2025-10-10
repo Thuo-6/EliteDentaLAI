@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { useVapi } from '../hooks/useVapi';
 import { AnimatedDentalIcon } from './AnimatedDentalIcon';
+import { useAirtable } from '../hooks/useAirtable';
 
 export const VoiceWidget = () => {
   const { 
@@ -38,6 +39,8 @@ export const VoiceWidget = () => {
     sendMessage,
     audioLevels
   } = useVapi();
+  
+  const { isConnected: airtableConnected } = useAirtable();
 
   const [isMinimized, setIsMinimized] = useState(false);
   const [lastInteraction, setLastInteraction] = useState(Date.now());
@@ -325,6 +328,8 @@ export const VoiceWidget = () => {
             <div className="flex items-center justify-between mb-4">
               <span className="text-sm font-semibold text-gray-700">Connection Status:</span>
               <div className="flex items-center gap-3">
+                {/* Airtable Connection Indicator */}
+                <div className={`w-2 h-2 rounded-full ${airtableConnected ? 'bg-blue-500' : 'bg-gray-400'}`} title={airtableConnected ? 'Airtable Connected' : 'Airtable Disconnected'} />
                 {hasError ? (
                   <WifiOff className="w-5 h-5 text-red-500" />
                 ) : (
@@ -403,7 +408,7 @@ export const VoiceWidget = () => {
                 </p>
                 <div className="mt-3 flex items-center justify-center gap-2 text-xs text-gray-500">
                   <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <span>HIPAA Compliant • 24/7 Available</span>
+                  <span>HIPAA Compliant • 24/7 Available • {airtableConnected ? 'Database Connected' : 'Offline Mode'}</span>
                 </div>
               </div>
             </div>
