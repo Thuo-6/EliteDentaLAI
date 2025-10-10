@@ -13,6 +13,7 @@
   "dependencies": {
     "@types/three": "^0.179.0",
     "@vapi-ai/web": "^2.4.0",
+    "axios": "^1.12.2",
     "date-fns": "^3.6.0",
     "lucide-react": "^0.344.0",
     "react": "^18.3.1",
