@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import Vapi from '@vapi-ai/web';
 import type { VapiCall, AudioLevel, TranscriptEntry } from '../types/vapi';
 import { DentalService } from '../services/dentalService';
+import { airtableService } from '../services/airtableService';
 
 // Enhanced VAPI configuration
 const VAPI_CONFIG = {
@@ -107,7 +108,12 @@ export const useVapi = () => {
             if (message.role === 'user' && newEntry.text) {
               try {
                 if (DentalService.initialize()) {
-                  DentalService.handleEmergency(newEntry.text);
+                  const isEmergency = DentalService.handleEmergency(newEntry.text);
+                  
+                  // If emergency detected, create appointment in Airtable
+                  if (isEmergency) {
+                    await handleEmergencyBooking(newEntry.text);
+                  }
                 }
               } catch (emergencyError) {
                 console.error('Emergency handling error:', emergencyError);
@@ -235,6 +241,40 @@ export const useVapi = () => {
       console.error('Failed to initialize VAPI:', initError);
       setError('Failed to initialize voice assistant');
       setConnectionHealth('failed');
+    }
+  }, []);
+
+  // Handle emergency booking with Airtable integration
+  const handleEmergencyBooking = useCallback(async (symptoms: string) => {
+    try {
+      // Extract urgency level from symptoms
+      const highUrgencyKeywords = ['unbearable', 'excruciating', 'severe', 'bleeding', 'can\'t sleep'];
+      const urgencyLevel = highUrgencyKeywords.some(keyword => 
+        symptoms.toLowerCase().includes(keyword)
+      ) ? 'high' : 'medium';
+      
+      // Determine pain level
+      let painLevel = 5;
+      if (symptoms.toLowerCase().includes('unbearable') || symptoms.toLowerCase().includes('excruciating')) {
+        painLevel = 9;
+      } else if (symptoms.toLowerCase().includes('severe') || symptoms.toLowerCase().includes('bad')) {
+        painLevel = 7;
+      }
+
+      // Create emergency appointment in Airtable
+      const emergencyData = {
+        patientName: 'Voice Call Patient', // This would be extracted from conversation
+        phone: 'Voice-' + Date.now(), // Temporary identifier
+        symptoms,
+        painLevel,
+        urgencyLevel: urgencyLevel as 'high' | 'medium' | 'low'
+      };
+
+      const result = await airtableService.createEmergencyAppointment(emergencyData);
+      console.log('Emergency appointment created in Airtable:', result);
+      
+    } catch (error) {
+      console.error('Failed to create emergency appointment:', error);
     }
   }, []);
 
