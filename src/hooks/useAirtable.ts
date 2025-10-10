@@ -9,6 +9,14 @@ export const useAirtable = () => {
   // Health check on mount
   useEffect(() => {
     const checkConnection = async () => {
+      // Skip if no credentials
+      if (!import.meta.env.VITE_AIRTABLE_API_TOKEN || !import.meta.env.VITE_AIRTABLE_BASE_ID) {
+        setError('Airtable credentials not configured');
+        setIsConnected(false);
+        setIsLoading(false);
+        return;
+      }
+      
       try {
         setIsLoading(true);
         const health = await airtableService.healthCheck();

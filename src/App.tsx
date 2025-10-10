@@ -5,10 +5,12 @@ import { ClinicDashboard } from './components/ClinicDashboard';
 import { StarfieldBackground } from './components/StarfieldBackground';
 import { FloatingElements } from './components/FloatingElements';
 import { ParticleField } from './components/ParticleField';
+import { useAirtable } from './hooks/useAirtable';
 
 function App() {
   const [currentView, setCurrentView] = React.useState<'landing' | 'dashboard'>('landing');
   const [isInteracting, setIsInteracting] = React.useState(false);
+  const { isConnected: airtableConnected, error: airtableError } = useAirtable();
 
   if (currentView === 'dashboard') {
     return <ClinicDashboard />;
@@ -163,8 +165,23 @@ function App() {
               <div className="w-4 h-4 bg-green-500 rounded-full animate-pulse"></div>
               <div className="absolute inset-0 w-4 h-4 bg-green-400 rounded-full animate-ping"></div>
             </div>
-            <span className="text-lg font-medium text-white">🦷 Elite Dental AI Ready - HIPAA Compliant</span>
+            <span className="text-lg font-medium text-white">
+              🦷 Elite Dental AI Ready - HIPAA Compliant {airtableConnected ? '• Database Connected' : '• Offline Mode'}
+            </span>
           </div>
+          
+          {/* Airtable Connection Status */}
+          {airtableError && (
+            <div className="mb-6 p-4 bg-red-500/10 backdrop-blur-md rounded-2xl border border-red-500/20 max-w-2xl mx-auto">
+              <div className="flex items-center gap-2 text-red-400 mb-2">
+                <span>⚠️</span>
+                <span className="font-semibold">Database Connection Issue</span>
+              </div>
+              <p className="text-red-300 text-sm">
+                Operating in offline mode. Patient data will be stored locally until connection is restored.
+              </p>
+            </div>
+          )}
           
           {/* Donation Section */}
           <div className="mb-8 p-6 bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-md rounded-3xl border border-[#89CFF0]/20 max-w-2xl mx-auto">

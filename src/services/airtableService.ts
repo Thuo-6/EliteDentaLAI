@@ -117,8 +117,9 @@ class AirtableService {
     this.baseUrl = `https://api.airtable.com/v0/${this.baseId}`;
 
     if (!this.apiToken || !this.baseId) {
-      console.error('Airtable configuration missing. Please check environment variables.');
-      throw new Error('Airtable API credentials not configured');
+      console.warn('Airtable configuration missing. Please check environment variables.');
+      console.warn('Expected: VITE_AIRTABLE_API_TOKEN and VITE_AIRTABLE_BASE_ID');
+      // Don't throw error to allow graceful degradation
     }
   }
 
