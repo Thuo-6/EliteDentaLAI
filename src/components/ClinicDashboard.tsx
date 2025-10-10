@@ -9,12 +9,16 @@ import {
   Phone,
   Clock,
   CheckCircle,
-  XCircle
+  XCircle,
+  Database,
+  Wifi,
+  WifiOff
 } from 'lucide-react';
 import { NoShowDefender } from '../services/noShowDefender';
 import { EmergencyTriage } from '../services/emergencyTriage';
 import { HIPAAShield } from '../services/hipaaShield';
 import { RecallAutomator } from '../services/recallAutomator';
+import { useAirtable } from '../hooks/useAirtable';
 
 interface MetricProps {
   title: string;
@@ -44,13 +48,29 @@ const Metric: React.FC<MetricProps> = ({ title, value, delta, icon, color }) => 
 );
 
 export const ClinicDashboard: React.FC = () => {
+  const { 
+    isConnected, 
+    isLoading, 
+    error: airtableError, 
+    getAppointmentStats,
+    getAppointments,
+    getWaitlist,
+    getDueRecalls
+  } = useAirtable();
+
   const [dashboardData, setDashboardData] = useState({
     revenueRecovery: 8400,
     noShowRate: 7,
     emergencyCapture: 92,
     waitlistStats: { total: 0, byPriority: {}, averageWaitTime: 0 },
     recallStats: { totalDue: 0, potentialRevenue: 0, contactSuccessRate: 0 },
-    hipaaCompliance: { complianceScore: 0, last24Hours: 0 }
+    hipaaCompliance: { complianceScore: 0, last24Hours: 0 },
+    airtableStats: {
+      totalAppointments: 0,
+      completedAppointments: 0,
+      totalRevenue: 0,
+      emergencyBookings: 0
+    }
   });
 
   const [recentActivity, setRecentActivity] = useState<Array<{
@@ -62,13 +82,38 @@ export const ClinicDashboard: React.FC = () => {
   }>>([]);
 
   useEffect(() => {
-    // Simulate real-time data updates
-    const updateDashboard = () => {
+    // Real-time data updates with Airtable integration
+    const updateDashboard = async () => {
       const waitlistStats = NoShowDefender.getWaitlistStats();
       const recallStats = RecallAutomator.getRecallStats();
       const hipaaStats = HIPAAShield.getAuditSummary();
 
-      setDashboardData({
+      let airtableStats = {
+        totalAppointments: 0,
+        completedAppointments: 0,
+        totalRevenue: 0,
+        emergencyBookings: 0
+      };
+
+      // Get real data from Airtable if connected
+      if (isConnected) {
+        try {
+          const stats = await getAppointmentStats();
+          if (stats) {
+            airtableStats = {
+              totalAppointments: stats.totalAppointments,
+              completedAppointments: stats.completedAppointments,
+              totalRevenue: stats.totalRevenue,
+              emergencyBookings: stats.emergencyBookings
+            };
+          }
+        } catch (error) {
+          console.error('Failed to get Airtable stats:', error);
+        }
+      }
+
+      setDashboardData(prev => ({
+        ...prev,
         revenueRecovery: 8400 + Math.floor(Math.random() * 1000),
         noShowRate: 7 + Math.floor(Math.random() * 3),
         emergencyCapture: 92 + Math.floor(Math.random() * 5),
@@ -77,8 +122,9 @@ export const ClinicDashboard: React.FC = () => {
         hipaaCompliance: {
           complianceScore: hipaaStats.complianceRate,
           last24Hours: hipaaStats.last24Hours
-        }
-      });
+        },
+        airtableStats
+      }));
     };
 
     // Simulate recent activity
@@ -118,7 +164,7 @@ export const ClinicDashboard: React.FC = () => {
 
     const interval = setInterval(updateDashboard, 30000); // Update every 30 seconds
     return () => clearInterval(interval);
-  }, []);
+  }, [isConnected, getAppointmentStats]);
 
   const handleSimulateCancellation = () => {
     NoShowDefender.simulateCancellation();
@@ -154,32 +200,73 @@ export const ClinicDashboard: React.FC = () => {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Elite Dental Clinic Dashboard</h1>
-          <p className="text-gray-600">Real-time practice management and revenue optimization</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-800 mb-2">Elite Dental Clinic Dashboard</h1>
+              <p className="text-gray-600">Real-time practice management and revenue optimization</p>
+            </div>
+            
+            {/* Airtable Connection Status */}
+            <div className="flex items-center gap-3">
+              <div className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium ${
+                isConnected 
+                  ? 'bg-green-100 text-green-700' 
+                  : 'bg-red-100 text-red-700'
+              }`}>
+                {isConnected ? (
+                  <>
+                    <Wifi className="w-4 h-4" />
+                    <Database className="w-4 h-4" />
+                    <span>Airtable Connected</span>
+                  </>
+                ) : (
+                  <>
+                    <WifiOff className="w-4 h-4" />
+                    <Database className="w-4 h-4" />
+                    <span>Airtable Disconnected</span>
+                  </>
+                )}
+              </div>
+              
+              {isLoading && (
+                <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+              )}
+            </div>
+          </div>
+          
+          {airtableError && (
+            <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-xl">
+              <div className="flex items-center gap-2 text-red-700">
+                <AlertTriangle className="w-5 h-5" />
+                <span className="font-medium">Airtable Connection Error:</span>
+              </div>
+              <p className="text-red-600 text-sm mt-1">{airtableError}</p>
+            </div>
+          )}
         </div>
 
         {/* Key Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <Metric
-            title="Revenue Recovery"
-            value={`$${dashboardData.revenueRecovery.toLocaleString()}/mo`}
-            delta="+65%"
+            title="Total Revenue (Airtable)"
+            value={`$${dashboardData.airtableStats.totalRevenue.toLocaleString()}`}
+            delta={isConnected ? "+Live Data" : "Offline"}
             icon={<DollarSign className="w-6 h-6 text-white" />}
             color="bg-gradient-to-br from-green-500 to-green-600"
           />
           
           <Metric
-            title="No-Show Rate"
-            value={`${dashboardData.noShowRate}%`}
-            delta="-68%"
+            title="Total Appointments"
+            value={dashboardData.airtableStats.totalAppointments.toString()}
+            delta={isConnected ? "Live Data" : "Offline"}
             icon={<Calendar className="w-6 h-6 text-white" />}
             color="bg-gradient-to-br from-blue-500 to-blue-600"
           />
           
           <Metric
-            title="Emergency Capture"
-            value={`${dashboardData.emergencyCapture}%`}
-            delta="+37%"
+            title="Emergency Bookings"
+            value={dashboardData.airtableStats.emergencyBookings.toString()}
+            delta={isConnected ? "Live Data" : "Offline"}
             icon={<AlertTriangle className="w-6 h-6 text-white" />}
             color="bg-gradient-to-br from-orange-500 to-orange-600"
           />
@@ -195,6 +282,48 @@ export const ClinicDashboard: React.FC = () => {
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          {/* Airtable Integration Status */}
+          <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-800">Database Integration</h3>
+              <Database className="w-5 h-5 text-[#89CFF0]" />
+            </div>
+            
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600">Connection Status</span>
+                <span className={`font-semibold ${isConnected ? 'text-green-600' : 'text-red-600'}`}>
+                  {isConnected ? 'Connected' : 'Disconnected'}
+                </span>
+              </div>
+              
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600">Database</span>
+                <span className="font-semibold text-gray-800">Airtable</span>
+              </div>
+              
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600">Total Records</span>
+                <span className="font-semibold text-gray-800">
+                  {dashboardData.airtableStats.totalAppointments + dashboardData.waitlistStats.total}
+                </span>
+              </div>
+              
+              <div className="pt-4 border-t">
+                <div className={`text-sm p-3 rounded-lg ${
+                  isConnected 
+                    ? 'bg-green-50 text-green-700 border border-green-200' 
+                    : 'bg-red-50 text-red-700 border border-red-200'
+                }`}>
+                  {isConnected 
+                    ? '✅ All patient data is being synced to Airtable in real-time'
+                    : '⚠️ Database connection lost. Operating in offline mode.'
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Waitlist Management */}
           <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
             <div className="flex items-center justify-between mb-4">
@@ -264,36 +393,6 @@ export const ClinicDashboard: React.FC = () => {
                 >
                   Run Recall Campaign
                 </button>
-              </div>
-            </div>
-          </div>
-
-          {/* HIPAA Compliance */}
-          <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">HIPAA Shield</h3>
-              <Shield className="w-5 h-5 text-[#89CFF0]" />
-            </div>
-            
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">Compliance Score</span>
-                <span className="font-semibold text-green-600">{dashboardData.hipaaCompliance.complianceScore}%</span>
-              </div>
-              
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">24h Activity</span>
-                <span className="font-semibold text-gray-800">{dashboardData.hipaaCompliance.last24Hours} events</span>
-              </div>
-              
-              <div className="flex items-center gap-2 text-sm text-green-600">
-                <CheckCircle className="w-4 h-4" />
-                <span>All PHI properly redacted</span>
-              </div>
-              
-              <div className="flex items-center gap-2 text-sm text-green-600">
-                <CheckCircle className="w-4 h-4" />
-                <span>End-to-end encryption active</span>
               </div>
             </div>
           </div>

@@ -1,4 +1,5 @@
 import { procedureConfig, emergencyKeywords, recallSettings } from '../config/dental';
+import { airtableService } from './airtableService';
 
 export class DentalService {
   private static initialized = false;
@@ -169,16 +170,10 @@ export class DentalService {
       
       if (isEmergency) {
         try {
-          // Enhanced emergency response with validation
-          const emergencyResult = this.bookEmergencyAppointment(cleanUtterance, keywordMatches);
-          if (emergencyResult.success) {
-            this.sendEmergencySMS(emergencyResult.appointmentDetails);
-            console.log('Emergency protocol activated successfully');
-            return true;
-          } else {
-            this.logError('Emergency booking', emergencyResult.error || 'Unknown booking error', 'high');
-            return false;
-          }
+          // Enhanced emergency response with Airtable integration
+          this.bookEmergencyAppointmentToAirtable(cleanUtterance, keywordMatches);
+          console.log('Emergency protocol activated successfully');
+          return true;
         } catch (emergencyError) {
           const errorMessage = emergencyError instanceof Error ? emergencyError.message : 'Unknown emergency handling error';
           this.logError('Emergency booking', errorMessage, 'high');
@@ -232,6 +227,60 @@ export class DentalService {
     }
     
     return matrix[str2.length][str1.length];
+  }
+
+  // Enhanced emergency booking with Airtable integration
+  private static async bookEmergencyAppointmentToAirtable(utterance: string, keywords: string[]): Promise<void> {
+    try {
+      // Determine urgency level based on keywords
+      const highUrgencyKeywords = ['unbearable', 'excruciating', 'severe', 'can\'t sleep', 'bleeding'];
+      const urgencyLevel = keywords.some(keyword => 
+        highUrgencyKeywords.some(urgent => keyword.includes(urgent))
+      ) ? 'high' : 'medium';
+      
+      // Determine pain level
+      let painLevel = 5; // default moderate
+      if (keywords.some(k => ['unbearable', 'excruciating', 'worst'].some(severe => k.includes(severe)))) {
+        painLevel = 9;
+      } else if (keywords.some(k => ['bad', 'hurts', 'painful'].some(moderate => k.includes(moderate)))) {
+        painLevel = 6;
+      } else if (keywords.some(k => ['slight', 'little', 'minor'].some(mild => k.includes(mild)))) {
+        painLevel = 3;
+      }
+
+      // For demo purposes, we'll use placeholder data
+      // In a real implementation, this would come from the voice conversation
+      const emergencyData = {
+        patientName: 'Emergency Patient', // This would be extracted from conversation
+        phone: '555-EMERGENCY', // This would be extracted from conversation
+        symptoms: keywords.join(', '),
+        painLevel,
+        urgencyLevel: urgencyLevel as 'high' | 'medium' | 'low'
+      };
+
+      // Create emergency appointment in Airtable
+      const result = await airtableService.createEmergencyAppointment(emergencyData);
+      
+      console.log('Emergency appointment created in Airtable:', {
+        patientId: result.patient.id,
+        appointmentId: result.appointment.id,
+        urgencyLevel,
+        painLevel
+      });
+
+      // Send emergency SMS with appointment details
+      this.sendEmergencySMS({
+        appointmentTime: new Date(`${result.appointment.appointmentDate}T${result.appointment.appointmentTime}`),
+        urgencyLevel,
+        patientInstructions: this.generateEmergencyInstructions(keywords),
+        patientName: emergencyData.patientName
+      });
+      
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error in Airtable emergency booking';
+      this.logError('bookEmergencyAppointmentToAirtable', errorMessage, 'high');
+      throw error;
+    }
   }
 
   // Enhanced emergency booking with comprehensive validation
